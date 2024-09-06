@@ -4,7 +4,7 @@ export const usePlaylist = () => {
   const fetchPlaylist = async () => {
     const config = useRuntimeConfig()
 
-    const { data } = await useFetch<Playlist>(() => `${config.public.jamendoApiUrl}/?client_id=${config.public.jamendoApiClientKey}&format=jsonpretty&search=ambient`)
+    const { data } = await useFetch<Playlist>(() => `${config.public.jamendoApiUrl}/?client_id=${config.public.jamendoApiClientKey}&format=jsonpretty&limit=200&offset=0`)
 
     return (data.value?.results || []) as Track[]
   }
