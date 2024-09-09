@@ -24,7 +24,9 @@ const columns = [{
 }]
 
 async function select (row: Track) {
-  await navigateTo({ path: `/track/${row.id}` })
+  playlistStore.playTrack(row)
+
+  await navigateTo({ path: `/track` })
 }
 </script>
 

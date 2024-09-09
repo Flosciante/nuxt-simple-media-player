@@ -5,14 +5,74 @@ const { fetchPlaylist } = usePlaylist()
 
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({
-    playlist: <Track[]>([]) ,
+    playlist: <Track[]>([]),
+    currentTrack: null as Track | null,
+    currentTime: 0,
+    currentVolume: 40
   }),
   actions: {
-    async fetchPlaylist() {
+    async fetchPlaylist () {
       this.playlist = await fetchPlaylist()
+    },
+    loadFromLocalStorage () {
+      const savedTrackId = localStorage.getItem('currentTrackId')
+      const savedCurrentTime = localStorage.getItem('currentTrackTime')
+      const savedCurrentVolume = localStorage.getItem('currentTrackVolume')
+
+      if (savedTrackId) {
+        const track = this.getPlaylist.find((t: Track) => t.id === savedTrackId)
+        if (track) {
+          this.currentTrack = track
+        }
+      }
+
+      if (savedCurrentTime) {
+        this.currentTime = parseFloat(savedCurrentTime)
+      }
+
+      if (savedCurrentVolume) {
+        this.currentVolume = parseInt(savedCurrentVolume)
+      }
+    },
+    playTrack (track: Track) {
+      this.currentTrack = track
+      this.currentTime = 0
+
+      console.log('track', track)
+
+      localStorage.setItem('currentTrackId', track.id)
+      localStorage.setItem('currentTrackTime', '0')
+      localStorage.setItem('audioState', 'play')
+    },
+
+    pauseTrack () {
+      localStorage.setItem('audioState', 'pause')
+    },
+
+    stopTrack () {
+      this.currentTime = 0
+
+      localStorage.setItem('audioState', 'stop')
+      localStorage.setItem('currentTrackTime', '0')
+    },
+
+    updateCurrentVolume (vol: number) {
+      this.currentVolume = vol
+
+      localStorage.setItem('currentTrackVolume', vol.toString())
+    },
+
+    updateCurrentTime (time: number) {
+      this.currentTime = time
+
+      localStorage.setItem('currentTrackTime', time.toString())
     },
   },
   getters: {
     getPlaylist: (state) => state.playlist,
+
+    getCurrentTrack (): Track | null {
+      return this.currentTrack
+    },
   },
-});
+})
