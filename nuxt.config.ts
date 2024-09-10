@@ -9,19 +9,7 @@ export default defineNuxtConfig({
     }
   },
 
-  fontMetrics: {
-    fonts: ['Nerko One'],
-  },
-
-  googleFonts: {
-    display: 'swap',
-    download: true,
-    families: {
-      'Nerko+One': [100, 200, 300, 400, 500, 600, 700]
-    },
-  },
-
   devtools: { enabled: true },
 
-  modules: ['@nuxt/eslint', '@nuxt/ui', '@pinia/nuxt', '@nuxtjs/google-fonts']
+  modules: ['@nuxt/eslint', '@nuxt/ui', '@pinia/nuxt', '@vueuse/nuxt']
 })
