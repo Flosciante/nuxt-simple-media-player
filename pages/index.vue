@@ -26,13 +26,7 @@ const columns = [{
 async function select (row: Track) {
   playlistStore.playTrack(row)
 
-  if (document.startViewTransition) {
-    document.startViewTransition(() => {
-      navigateTo({ path: `/track` })
-    })
-  } else {
-    await navigateTo({ path: `/track` })
-  }
+  await navigateTo({ path: `/track` })
 }
 </script>
 
