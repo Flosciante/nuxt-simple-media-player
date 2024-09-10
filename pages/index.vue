@@ -26,7 +26,13 @@ const columns = [{
 async function select (row: Track) {
   playlistStore.playTrack(row)
 
-  await navigateTo({ path: `/track` })
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      navigateTo({ path: `/track` })
+    })
+  } else {
+    await navigateTo({ path: `/track` })
+  }
 }
 </script>
 
@@ -59,7 +65,7 @@ async function select (row: Track) {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .neon {
   padding-bottom: 0.1em;
   box-shadow: 0 1px 0.1rem #fff,

@@ -1,173 +1,99 @@
 <script setup lang="ts">
-import { usePlaylistStore } from '@/stores/usePlaylistStore'
-import type { Track } from '~/types'
-
+//reactive variables
 const audioPlayer = ref<HTMLAudioElement | null>(null)
 const volumeContainer = ref<HTMLDivElement | null>(null)
-const isMouseDown = ref(false)
-
-const route = useRoute()
-const playlistStore = usePlaylistStore()
+const audioState = ref<'pause' | 'play' | 'stop'>('pause')
 
 const knobRotation = computed(() => {
   return `rotate(${(playlistStore.currentVolume / 100) * 270}deg)`
 })
 
-const audioState = ref<'pause' | 'play' | 'stop'>('pause')
-const track = computed(() => playlistStore.getCurrentTrack)
+//composables
+const { track, duration, next, previous, playlistStore, initAudioPlayer, volume } = useAudioControls(audioPlayer, audioState)
 
-const playlist = playlistStore.getPlaylist
-const { id } = route.params
-
-const volume = computed({
-  get: () => playlistStore.currentVolume,
-  set: (newValue: number) => {
-    playlistStore.updateCurrentVolume(newValue)
-    if (audioPlayer.value) {
-      audioPlayer.value.volume = newValue / 100
-    }
-  }
-})
-
-
+//hooks
 onMounted(async () => {
-  playlistStore.loadFromLocalStorage()
-
   await nextTick()
 
-  if (audioPlayer.value && track.value) {
-    audioPlayer.value.src = track.value.audio
-
-    audioPlayer.value.volume = volume.value / 100
-
-    audioPlayer.value.addEventListener('timeupdate', () => {
-      playlistStore.updateCurrentTime(audioPlayer.value!.currentTime)
-    })
-  }
+  initAudioPlayer()
 })
 
-const rotateKnob = (event: MouseEvent) => {
-  if (!isMouseDown.value || !volumeContainer.value) return
 
-  const rect = volumeContainer.value.getBoundingClientRect()
-  const centerX = rect.left + rect.width / 2
-  const centerY = rect.top + rect.height / 2
-  const angle = Math.atan2(event.clientY - centerY, event.clientX - centerX) * (180 / Math.PI) + 90
-  const newVolume = Math.min(Math.max((angle / 270) * 100, 0), 100)
-  volume.value = newVolume
-}
-
-const play = async () => {
-  if (audioPlayer.value && track.value) {
-    audioState.value = 'play'
-    audioPlayer.value.src = track.value.audio
-    audioPlayer.value.currentTime = playlistStore.currentTime
-    volume.value = playlistStore.currentVolume
-    audioPlayer.value.load()
-    audioPlayer.value?.play().catch((error) => console.error('Error playing audio:', error))
-    playlistStore.playTrack(track.value)
-  }
-}
-
-const pause = () => {
-  audioState.value = 'pause'
-  audioPlayer.value?.pause()
-  playlistStore.pauseTrack()
-}
-
-const stop = () => {
-  audioState.value = 'stop'
-  audioPlayer.value?.pause()
-  audioPlayer.value!.currentTime = 0
-  playlistStore.stopTrack()
-}
-
-const next = () => {
-  const currentIndex = playlist.findIndex((t: Track) => t.id === track.value!.id)
-  let nextIndex = currentIndex + 1
-
-  if (nextIndex >= playlist.length) {
-    nextIndex = 0
-  }
-
-  const nextTrack = playlist[nextIndex]
-  playlistStore.playTrack(nextTrack)
-
-  if (audioPlayer.value) {
-    audioPlayer.value.src = nextTrack.audio
-    audioPlayer.value.currentTime = 0
-    if (audioState.value === 'play') {
-      audioPlayer.value.play()
+//watchers
+watch(
+  () => playlistStore.currentTime,
+  (newTime) => {
+    if (audioPlayer.value && Math.abs(audioPlayer.value.currentTime - newTime) > 0.1) {
+      audioPlayer.value.currentTime = newTime
     }
   }
-}
+)
 
-const previous = () => {
-  const currentIndex = playlist.findIndex((t: Track) => t.id === track.value!.id)
-  let previousIndex = currentIndex - 1
+//keyboard shortcuts
+onKeyStroke('Escape', () => {
+  navigateTo('/')
+})
 
-  console.log('previousIndex', previousIndex)
+onKeyStroke('ArrowLeft', () => {
+  previous()
+})
 
-  if (previousIndex < 0) {
-    previousIndex = playlist.length - 1
-  }
-
-  const previousTrack = playlist[previousIndex]
-
-  playlistStore.playTrack(previousTrack)
-
-  if (audioPlayer.value) {
-    audioPlayer.value.src = previousTrack.audio
-    audioPlayer.value.currentTime = 0
-    if (audioState.value === 'play') {
-      audioPlayer.value.play()
-    }
-  }
-}
-
+onKeyStroke('ArrowRight', () => {
+  next()
+})
 </script>
 
 <template>
-  <div v-if="track"
-    class="bg-gradient-to-b from-gray-900 to-gray-800 h-screen flex flex-col justify-between items-center">
-    <div class="flex items-center justify-center h-full">
-      <img :src="track.image" width="600" height="600">
-    </div>
-    <div class="h-60 flex justify-between items-center w-full px-4">
-      <div class="flex gap-x-2 items-center w-60">
-        <img :src="track.album_image" width="80" height="80">
-        <div class="flex flex-col">
-          <span class="text-lg font-semibold text-gray-100 truncate">{{ track.name }}</span>
-          <span class="text-gray-300 line-clamp-2">{{ track.album_name }}</span>
+  <div>
+    <div v-if="track && audioPlayer" class="track-container">
+      <span class="mobile-background-blur" />
+      <img :src="track.image" width="1200" height="800" class="mobile-background-image">
+
+      <UTooltip text="Back to playlist" :shortcuts="['Esc']" class="back-button-container">
+        <UButton icon="i-fa6-solid-arrow-left" variant="link" size="xl" to="/" />
+      </UTooltip>
+
+      <div class="track-infos-container">
+        <img :src="track.image" width="600" height="600">
+        <TrackInfos :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
+          :album-name="track.album_name" :album-image="track.album_image" desktop />
+      </div>
+
+      <div class="controls-container">
+        <div class="track-infos-mobile-range-bar-container">
+          <!-- infos -->
+          <div class="track-infos-mobile-container">
+            <TrackInfos :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
+              :album-name="track.album_name" :album-image="track.album_image" />
+
+            <UTooltip text="Download track">
+              <UButton v-if="track.audiodownload_allowed" variant="link" icon="i-fa6-solid-download" color="gray"
+                :to="track.audiodownload" class="color-transition" />
+            </UTooltip>
+          </div>
+
+          <!-- time range -->
+          <AudioProgressBar v-if="duration" :total-duration="duration" :audio-player="audioPlayer" />
         </div>
-      </div>
 
-      <div class="rounded-full h-full flex flex-1 w-full items-center justify-center buttons gap-x-4">
-        <UButton size="lg" variant="outline" color="white" name="i-heroicons-chevron-double-right-16-solid"
-          class="button" :ui="{ variant: { outline: 'ring-0 hover:!bg-transparent' } }" @click="previous()">
-          <UIcon name="i-fa6-solid-backward-step" class="h-8 w-8 hover:bg-gray-100 transition-colors duration-200" />
-        </UButton>
-        <UButton size="lg" variant="outline" color="white"
-          :ui="{ variant: { outline: 'ring-0 hover:!bg-transparent' } }"
-          @click="(audioState === 'pause' || audioState === 'stop') ? play() : pause()">
-          <UIcon :name="(audioState === 'pause' || audioState === 'stop') ? 'i-fa6-solid-play' : 'i-fa6-solid-pause'"
-            class="h-8 w-8 hover:bg-gray-100 transition-colors duration-200" />
-        </UButton>
-        <UButton size="lg" variant="outline" color="white"
-          :ui="{ variant: { outline: 'ring-0 hover:!bg-transparent' } }" @click="stop()">
-          <UIcon name="i-fa6-solid-stop" class="h-8 w-8 hover:bg-gray-100 transition-colors duration-200" />
-        </UButton>
-        <UButton size="lg" variant="outline" color="white" name="i-heroicons-chevron-double-right-16-solid"
-          :ui="{ variant: { outline: 'ring-0 hover:!bg-transparent' } }" @click="next()">
-          <UIcon name="i-fa6-solid-forward-step" class="h-8 w-8 hover:bg-gray-100 transition-colors duration-200" />
-        </UButton>
-      </div>
+        <!-- audio controls -->
+        <div class="controls">
+          <UTooltip text="Download track" class="download-button-container">
+            <UButton v-if="track.audiodownload_allowed" variant="link" icon="i-fa6-solid-download" color="gray"
+              :to="track.audiodownload" class="color-transition" />
+          </UTooltip>
 
-      <div class="w-60 flex gap-x-2 items-center justify-end">
-        <UIcon
-          :name="volume > 50 ? 'i-fa6-solid-volume-high' : volume > 0 ? 'i-fa6-solid-volume-low' : 'i-fa6-solid-volume-xmark'" />
-        <URange v-model="volume" class="w-40" size="xs"
-          :ui="{ thumb: { background: ' [&::-webkit-slider-thumb]:dark:bg-primary-400' } }" />
+          <!-- track button -->
+          <AudioControls :audio-player="audioPlayer" :state="audioState" />
+
+          <div class="w-60 gap-x-2 items-center justify-end hidden md:flex">
+            <div ref="volumeContainer" class="volume-container">
+              <div class="volume-knob" :style="{ transform: knobRotation }" />
+            </div>
+            <URange v-model="volume" class="w-32 lg:w-40" size="xs"
+              :ui="{ thumb: { background: ' [&::-webkit-slider-thumb]:dark:bg-primary-400' } }" />
+          </div>
+        </div>
       </div>
     </div>
     <audio ref="audioPlayer" controls class="hidden" />
@@ -176,20 +102,168 @@ const previous = () => {
 
 
 <style scoped lang="postcss">
-.buttons button:hover {
-  width: 60px;
-  height: 60px;
-  box-shadow: 7px 7px 16px 0 rgba(0, 0, 0, 0.5), -7px -7px 16px 0 rgb(30 41 59);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
+/* transition color */
+.color-transition {
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
+/* main container */
+.track-container {
+  position: relative;
+  overflow-x: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-.buttons button:active {
-  box-shadow:
-    5px 5px 10px 0 rgba(0, 0, 0, 0.3) inset,
-    -5px -5px 12px 0 rgb(30 41 59) inset;
+/* background for mobile */
+.mobile-background-blur,
+.mobile-background-image {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
+.mobile-background-blur {
+  z-index: -1;
+  background-color: rgba(17, 24, 39, 0.9);
+  backdrop-filter: blur(16px);
+}
+
+.mobile-background-image {
+  z-index: -2;
+  inset: 0;
+  object-fit: cover;
+}
+
+/* back button */
+.back-button-container {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  transition: color 0.2s ease;
+}
+
+/* track infos */
+.track-infos-container {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+  margin-top: 7rem;
+}
+
+/* track infos + controls container */
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.track-infos-mobile-range-bar-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.track-infos-mobile-container {
+  gap: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 2rem;
+  justify-content: space-between;
+}
+
+/* controls container */
+.controls {
+  height: 10rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.download-button-container {
+  width: 15rem;
+  display: none;
+}
+
+/* volume Container */
+.volume-container {
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid #333;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ccc 30%, #999 70%);
+  position: relative;
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Volume knob */
+.volume-knob {
+  width: 21px;
+  height: 21px;
+  background-color: #444;
+  border-radius: 50%;
+  margin-top: 0.5px;
+  transform: translate(-50%, -50%) rotate(0deg);
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease-in-out;
+  box-shadow: inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.4), inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.1);
+}
+
+.volume-knob:before {
+  content: '';
+  width: 1.5px;
+  height: 4.5px;
+  background-color: #fff;
+  position: absolute;
+  top: 1.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 1px;
+  box-shadow: 0 0.75px 1.5px rgba(0, 0, 0, 0.2);
+}
+
+/* Media Queries */
+@media (min-width: 640px) {
+  .track-infos-mobile-container {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 768px) {
+  .track-container {
+    background: linear-gradient(to bottom, #1a202c, #2d3748);
+  }
+
+  .mobile-background-blur,
+  .mobile-background-image {
+    display: none;
+  }
+
+  .track-infos-container {
+    display: flex;
+  }
+
+  .track-infos-mobile-container {
+    display: none;
+  }
+
+  .controls .download-button-container {
+    display: block;
+  }
 }
 </style>
