@@ -36,9 +36,6 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     playTrack (track: Track) {
       this.currentTrack = track
-      this.currentTime = 0
-
-      console.log('track', track)
 
       localStorage.setItem('currentTrackId', track.id)
       localStorage.setItem('currentTrackTime', '0')
