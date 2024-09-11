@@ -7,7 +7,7 @@ await playlistStore.fetchPlaylist()
 </script>
 
 <template>
-  <div>
+  <div class="h-screen w-screen">
     <NuxtPage />
   </div>
 </template>
