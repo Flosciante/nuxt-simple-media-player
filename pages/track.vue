@@ -16,6 +16,8 @@ onMounted(async () => {
 })
 
 //watchers
+
+//keep position if click on progress bar
 watch(
   () => playlistStore.currentTime,
   (newTime) => {
@@ -46,8 +48,13 @@ onKeyStroke('ArrowRight', () => {
       <img :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']">
 
       <UTooltip text="Back to playlist" :shortcuts="['Esc']" :class="$style['back-button-container']">
-        <UButton icon="i-fa6-solid-arrow-left" variant="link" size="xl" to="/" />
+        <UButton icon="i-fa6-solid-xmark" variant="link" color="white" size="xl" to="/" />
       </UTooltip>
+
+      <NuxtLink to="/" :class="$style['logo-wraper']">
+        <Logo />
+      </NuxtLink>
+
 
       <div :class="$style['track-infos-container']">
         <img :src="track.image" width="600" height="600">
@@ -57,7 +64,7 @@ onKeyStroke('ArrowRight', () => {
 
       <div :class="$style['controls-container']">
         <div :class="$style['track-infos-mobile-range-bar-container']">
-          <!-- infos -->
+          <!-- track infos -->
           <div :class="$style['track-infos-mobile-container']">
             <TrackDetails :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
               :album-name="track.album_name" :album-image="track.album_image" />
@@ -134,9 +141,20 @@ onKeyStroke('ArrowRight', () => {
 /* back button */
 .back-button-container {
   position: absolute;
-  left: 1rem;
+  right: 1rem;
   top: 1rem;
   transition: color 0.2s ease;
+
+  &:hover {
+    color: rgb(176, 176, 176);
+  }
+}
+
+/* logo */
+.logo-wraper {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
 }
 
 /* track infos */
@@ -213,11 +231,9 @@ onKeyStroke('ArrowRight', () => {
 
 @media (min-width: 768px) {
   .track-container {
-    background: linear-gradient(to bottom, #1a202c, #2d3748);
+    background: linear-gradient(to bottom, #2d3748, #1a202c);
   }
 
-  .mobile-background-blur,
-  .mobile-background-image,
   .track-infos-mobile-container {
     display: none;
   }
