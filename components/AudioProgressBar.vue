@@ -13,6 +13,10 @@ const props = defineProps({
   totalDuration: {
     type: String,
     required: true
+  },
+  detail: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -30,7 +34,8 @@ watch(() => playlistStore.currentTime, (newTime) => {
 </script>
 
 <template>
-  <div :class="$style['player-progress-bar-container']">
+  <div
+    :class="[$style['player-progress-bar'], detail ? $style['player-progress-bar-container-detail'] : $style['player-progress-bar-container']]">
     <span>{{ formatDuration(playlistStore.currentTime) }}</span>
     <URange v-model="playlistStore.currentTime" :min="0" :max="audioPlayer.duration" />
     <span>{{ totalDuration }}</span>
@@ -38,21 +43,57 @@ watch(() => playlistStore.currentTime, (newTime) => {
 </template>
 
 <style module lang="postcss">
-.player-progress-bar-container {
-  width: 100%;
-  padding-left: 1rem;
-  padding-right: 1rem;
+.player-progress-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+}
+
+.player-progress-bar-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16px;
 
   & span {
+    display: none;
     width: 3rem;
   }
 
   & :nth-child(3) {
     text-align: right;
+  }
+}
+
+.player-progress-bar-container-detail {
+  position: relative;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  & span {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) {
+  .player-progress-bar-container {
+    position: relative;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+
+
+    & span {
+      display: block;
+    }
+  }
+
+  .player-progress-bar-container-detail {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 4rem;
   }
 }
 </style>

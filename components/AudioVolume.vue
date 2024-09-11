@@ -74,7 +74,7 @@ const knobRotation = computed(() => {
 
 @media (min-width: 1024px) {
   .volume-range {
-    width: 10rem;
+    width: 8rem;
   }
 }
 </style>

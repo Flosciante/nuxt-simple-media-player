@@ -23,13 +23,18 @@ defineProps({
   desktop: {
     type: Boolean,
     default: false
+  },
+  detail: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
 
 <template>
-  <div :class="[$style['track-info-container'], { [$style['max-width-desktop']]: !desktop }]">
-    <img v-if="!desktop" :src="albumImage" width="80" height="80" :class="$style.thumbnail">
+  <div
+    :class="[$style['track-info-container'], { [$style['max-width-desktop']]: !desktop }, { [$style['track-info-container-detail-mobile']]: desktop }, { [$style['track-info-container-detail']]: detail }, { [$style['track-info-container-small']]: !detail }]">
+    <img v-if="!desktop" :src="albumImage" width="60" height="60" :class="$style.thumbnail">
     <div :class="[$style['track-info-content'], { [$style['align-items-center']]: desktop }]">
       <UTooltip text="See on Jamendo platform">
         <a :href="shareurl" target="_blank" rel="noopener noreferrer"
@@ -50,10 +55,28 @@ defineProps({
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-self: start;
+  width: 100%;
+}
+
+.track-info-container-detail {
+  padding-bottom: 1rem;
+}
+
+.track-info-container-small {
+  height: 100%;
+}
+
+.track-info-container-detail-mobile {
+  width: 100%;
+  display: none;
 }
 
 .max-width-desktop {
-  max-width: 520px;
+  max-width: 300px;
 }
 
 .track-info-content {
@@ -81,7 +104,7 @@ defineProps({
 }
 
 .track-title-mobile {
-  font-size: 1.125rem;
+  font-size: 0.85rem;
 }
 
 .track-title-desktop {
@@ -107,11 +130,12 @@ defineProps({
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.75rem;
 }
 
 .artist-name {
   color: #9ca3af;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
 }
 
 .font-italic {
@@ -125,6 +149,12 @@ defineProps({
 @media screen and (max-width: 640px) {
   .thumbnail {
     display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .track-info-container-detail-mobile {
+    display: flex;
   }
 }
 </style>

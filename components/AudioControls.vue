@@ -9,6 +9,10 @@ const props = defineProps({
   state: {
     type: String as PropType<AudioState>,
     required: true
+  },
+  detail: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -20,28 +24,29 @@ const { play, pause, stop, next, previous, audioState } = useAudioControls(playe
 
 <template>
   <div :class="$style['controls-container']">
-    <UTooltip text="Previous track" :shortcuts="['←']">
+    <UTooltip text="Previous track" :shortcuts="['←']" :class="{ [$style['small-player']]: !detail }">
       <UButton size="xs" variant="outline" color="gray" name="i-heroicons-chevron-double-right-16-solid"
-        :class="$style.prev" @click="previous()">
+        :class="$style.prev" aria-label="Previous track" @click="previous()">
         <UIcon name="i-fa6-solid-backward-step" />
       </UButton>
     </UTooltip>
 
     <UTooltip :text="audioState === 'pause' || audioState === 'stop' ? 'Play track' : 'Pause track'">
-      <UButton size="lg" variant="outline" color="white" :class="$style.play"
+      <UButton size="md" variant="outline" color="white" :class="$style.play"
+        :aria-label="(audioState === 'pause' || audioState === 'stop') ? 'Play track' : 'Pause track'"
         @click="(audioState === 'pause' || audioState === 'stop') ? play() : pause()">
         <UIcon :name="(audioState === 'pause' || audioState === 'stop') ? 'i-fa6-solid-play' : 'i-fa6-solid-pause'" />
       </UButton>
     </UTooltip>
 
-    <UTooltip text="Stop track">
-      <UButton size="lg" variant="outline" color="white" :class="$style.stop" @click="stop()">
+    <UTooltip text="Stop track" :class="{ [$style['small-player']]: !detail }">
+      <UButton size="md" variant="outline" color="white" :class="$style.stop" aria-label="Stop track" @click="stop()">
         <UIcon name="i-fa6-solid-stop" />
       </UButton>
     </UTooltip>
 
-    <UTooltip text="next track" :shortcuts="['→']">
-      <UButton size="md" variant="outline" color="gray" :class="$style.next" @click="next()">
+    <UTooltip text="next track" :shortcuts="['→']" :class="{ [$style['small-player']]: !detail }">
+      <UButton size="md" variant="outline" color="gray" :class="$style.next" aria-label="Next track" @click="next()">
         <UIcon name="i-fa6-solid-forward-step" />
       </UButton>
     </UTooltip>
@@ -59,35 +64,11 @@ const { play, pause, stop, next, previous, audioState } = useAudioControls(playe
   gap: 1rem;
 }
 
-.prev:hover,
-.next:hover,
-.play:hover,
-.stop:hover {
-  box-shadow: 7px 7px 16px 0 rgba(0, 0, 0, 0.5), -7px -7px 16px 0 rgb(30 41 59);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  transform: scale(1.1);
-  transition: transform 0.2s ease-in-out, color 0.2s ease, background-color 0.2s ease;
-
-  & span {
-    color: white;
-  }
-}
-
-.prev:active,
-.next:active,
-.play:active,
-.stop:active {
-  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.3) inset, -5px -5px 12px 0 rgb(30 41 59) inset;
-}
-
 .play,
 .stop {
   & span {
-    width: 2rem;
-    height: 2rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }
 
@@ -96,6 +77,47 @@ const { play, pause, stop, next, previous, audioState } = useAudioControls(playe
   & span {
     width: 1rem;
     height: 1rem;
+  }
+}
+
+.small-player {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .small-player {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 768px) {
+  .prev .next {
+    & span {
+      color: rgb(82, 82, 82);
+    }
+  }
+
+  .prev,
+  .next,
+  .play,
+  .stop {
+    &:hover {
+      box-shadow: 7px 7px 16px 0 rgba(0, 0, 0, 0.5), -7px -7px 16px 0 rgba(23, 32, 54, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      transform: scale(1.1);
+      transition: transform 0.2s ease-in-out, color 0.2s ease, background-color 0.2s ease;
+
+      & span {
+        color: white;
+      }
+    }
+
+    &:active {
+      box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.3) inset, -5px -5px 12px 0 rgba(17, 24, 39, 0.9) inset;
+    }
   }
 }
 </style>
