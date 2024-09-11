@@ -26,7 +26,7 @@ async function select (row: Track) {
 </script>
 
 <template>
-  <div :class="$style.container">
+  <div :class="$style.container" class="w-full">
     <PlaylistHeader>
       <template #search>
         <UInput v-model="query" class="w-full hidden md:block md:pl-40 md:pr-20 lg:px-60"
@@ -37,23 +37,23 @@ async function select (row: Track) {
     <table :class="$style['table']">
       <thead :class="$style['table-header']">
         <tr>
-          <th>#</th>
+          <th :class="$style['table-header-index']">#</th>
           <th>Title</th>
           <th :class="$style['table-header-artist']">Album</th>
-          <th>Duration</th>
+          <th :class="$style['table-header-duration']">Duration</th>
         </tr>
       </thead>
 
       <!-- Table Data -->
       <tbody v-if="filteredPlaylist && filteredPlaylist.length" :class="$style['table-body']">
         <tr v-for="(track, index) in filteredPlaylist" :key="track.id" @click="select(track)">
-          <td :class="$style['body-track-number']">{{ index + 1 }}</td>
+          <td :class="$style['body-track-index']">{{ index + 1 }}</td>
 
           <!-- Track Title -->
           <td :class="$style['body-track-title-wrapper']">
             <div :class="$style['body-track-title-container']">
               <img :src="track.image" :alt="`Album ${track.album_name} cover`" width="48" height="48">
-              <div>
+              <div :class="$style['body-track-title-name-artist']">
                 <div :class="$style['body-track-title-name']">{{ track.name }}</div>
                 <div :class="$style['body-track-title-artist']">{{ track.artist_name }}</div>
               </div>
@@ -79,6 +79,7 @@ async function select (row: Track) {
   height: 100vh;
   width: 100vw;
   background-color: rgb(15 23 42);
+  overflow-x: hidden;
 }
 
 .table {
@@ -107,13 +108,11 @@ async function select (row: Track) {
   & th {
     padding: 1rem;
   }
-
-  & th:nth-child(2) {
-    padding-left: 0px;
-  }
 }
 
-.table-header-artist {
+.table-header-artist,
+.table-header-index,
+.table-header-duration {
   display: none;
 }
 
@@ -135,15 +134,19 @@ async function select (row: Track) {
   }
 }
 
-.body-track-number {
+.body-track-index {
   padding-left: 1rem;
   padding-right: 1rem;
+  display: none;
 }
 
 .body-track-title-wrapper {
+  padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+  display: grid;
+  width: 100%;
 
   & img {
     width: 3rem;
@@ -157,14 +160,18 @@ async function select (row: Track) {
 .body-track-title-container {
   display: flex;
   align-items: center;
+  overflow: hidden;
+}
+
+.body-track-title-name-artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .body-track-title-name {
   color: white;
   font-weight: 600;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -191,23 +198,25 @@ async function select (row: Track) {
   padding-right: 1rem;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+  display: none;
 }
 
-
-
 @media (min-width: 768px) {
-  .table-header-artist {
-    display: block;
-  }
 
-  .body-track-album {
-    display: flex;
+  .body-track-album,
+  .table-header-artist {
+    display: table-cell;
   }
 }
 
 @media (min-width: 640px) {
+
+  .table-header-duration,
+  .table-header-index,
+  .body-track-index,
+  .body-track-duration,
   .body-track-title-wrapper img {
-    display: block;
+    display: table-cell;
   }
 }
 </style>
