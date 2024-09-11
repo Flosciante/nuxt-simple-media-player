@@ -3,6 +3,7 @@ import { formatDuration } from '~/utils'
 import { usePlaylistStore } from '@/stores/usePlaylistStore'
 import type { Track } from '~/types'
 
+
 const playlistStore = usePlaylistStore()
 const playlist = playlistStore.getPlaylist
 
@@ -20,13 +21,11 @@ const filteredPlaylist = computed(() => {
 
 async function select (row: Track) {
   playlistStore.playTrack(row)
-
-  await navigateTo({ path: `/track` })
 }
 </script>
 
 <template>
-  <div :class="$style.container" class="w-full">
+  <div :class="$style.container" class="w-full mb-20">
     <PlaylistHeader>
       <template #search>
         <UInput v-model="query" class="w-full hidden md:block md:pl-40 md:pr-20 lg:px-60"
@@ -34,43 +33,49 @@ async function select (row: Track) {
       </template>
     </PlaylistHeader>
 
-    <table :class="$style['table']">
-      <thead :class="$style['table-header']">
-        <tr>
-          <th :class="$style['table-header-index']">#</th>
-          <th>Title</th>
-          <th :class="$style['table-header-artist']">Album</th>
-          <th :class="$style['table-header-duration']">Duration</th>
-        </tr>
-      </thead>
+    <div :class="$style['table-wrapper']">
+      <table :class="$style['table']">
+        <thead :class="$style['table-header']">
+          <tr>
+            <th :class="$style['table-header-index']">#</th>
+            <th>Title</th>
+            <th :class="$style['table-header-artist']">Album</th>
+            <th :class="$style['table-header-duration']">Duration</th>
+          </tr>
+        </thead>
 
-      <!-- Table Data -->
-      <tbody v-if="filteredPlaylist && filteredPlaylist.length" :class="$style['table-body']">
-        <tr v-for="(track, index) in filteredPlaylist" :key="track.id" @click="select(track)">
-          <td :class="$style['body-track-index']">{{ index + 1 }}</td>
+        <!-- Table Data -->
+        <tbody v-if="filteredPlaylist && filteredPlaylist.length" :class="$style['table-body']">
+          <tr v-for="(track, index) in filteredPlaylist" :key="track.id" @click="select(track)">
+            <td :class="$style['body-track-index']">{{ index + 1 }}</td>
 
-          <!-- Track Title -->
-          <td :class="$style['body-track-title-wrapper']">
-            <div :class="$style['body-track-title-container']">
-              <img :src="track.image" :alt="`Album ${track.album_name} cover`" width="48" height="48">
-              <div :class="$style['body-track-title-name-artist']">
-                <div :class="$style['body-track-title-name']">{{ track.name }}</div>
-                <div :class="$style['body-track-title-artist']">{{ track.artist_name }}</div>
+            <!-- Track Title -->
+            <td :class="$style['body-track-title-wrapper']">
+              <div :class="$style['body-track-title-container']">
+                <img :src="track.image" :alt="`Album ${track.album_name} cover`" width="48" height="48">
+                <div :class="$style['body-track-title-name-artist']">
+                  <div :class="$style['body-track-title-name']">{{ track.name }}</div>
+                  <div :class="$style['body-track-title-artist']">{{ track.artist_name }}</div>
+                </div>
               </div>
-            </div>
 
-          </td>
+            </td>
 
-          <!-- Album Name -->
-          <td :class="$style['body-track-album']">
-            <span>{{ track.album_name }}</span>
-          </td>
+            <!-- Album Name -->
+            <td :class="$style['body-track-album']">
+              <span>{{ track.album_name }}</span>
+            </td>
 
-          <!-- Duration -->
-          <td :class="$style['body-track-duration']">{{ formatDuration(track.duration) }}</td>
-        </tr>
-      </tbody>
-    </table>
+            <!-- Duration -->
+            <td :class="$style['body-track-duration']">{{ formatDuration(track.duration) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="absolute bottom-0 w-full bg-black z-50">
+      <AudioPlayer />
+    </div>
   </div>
 </template>
 
@@ -80,6 +85,10 @@ async function select (row: Track) {
   width: 100vw;
   background-color: rgb(15 23 42);
   overflow-x: hidden;
+}
+
+.table-wrapper {
+  margin-bottom: 6rem;
 }
 
 .table {
