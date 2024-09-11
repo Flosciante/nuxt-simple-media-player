@@ -19,7 +19,7 @@
   padding-left: 1rem;
   padding-right: 1rem;
   background-image: linear-gradient(to top, rgb(15 23 42), rgb(30 41 59));
-  padding-top: 2rem;
+  padding-top: 1rem;
 }
 
 .header-inner {
@@ -51,7 +51,7 @@
 }
 
 h1 {
-  font-size: 4.5rem;
+  font-size: 3rem;
   font-weight: bold;
   color: white;
 }
@@ -69,6 +69,12 @@ h1 {
 @media (min-width: 768px) {
   .logo-container {
     width: 10rem;
+  }
+}
+
+@media (min-width: 640px) {
+  h1 {
+    font-size: 4.5rem;
   }
 }
 </style>
