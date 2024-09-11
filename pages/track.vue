@@ -1,15 +1,11 @@
 <script setup lang="ts">
 //reactive variables
 const audioPlayer = ref<HTMLAudioElement | null>(null)
-const volumeContainer = ref<HTMLDivElement | null>(null)
+
 const audioState = ref<'pause' | 'play' | 'stop'>('pause')
 
-const knobRotation = computed(() => {
-  return `rotate(${(playlistStore.currentVolume / 100) * 270}deg)`
-})
-
 //composables
-const { track, duration, next, previous, playlistStore, initAudioPlayer, volume } = useAudioControls(audioPlayer, audioState)
+const { track, duration, next, previous, playlistStore, initAudioPlayer } = useAudioControls(audioPlayer, audioState)
 
 //hooks
 onMounted(async () => {
@@ -83,15 +79,12 @@ onKeyStroke('ArrowRight', () => {
               :to="track.audiodownload" class="color-transition" />
           </UTooltip>
 
-          <!-- track button -->
+          <!-- track buttons -->
           <AudioControls :audio-player="audioPlayer" :state="audioState" />
 
+          <!-- volume -->
           <div class="w-60 gap-x-2 items-center justify-end hidden md:flex">
-            <div ref="volumeContainer" class="volume-container">
-              <div class="volume-knob" :style="{ transform: knobRotation }" />
-            </div>
-            <URange v-model="volume" class="w-32 lg:w-40" size="xs"
-              :ui="{ thumb: { background: ' [&::-webkit-slider-thumb]:dark:bg-primary-400' } }" />
+            <AudioVolume :audio-player="audioPlayer" :state="audioState" />
           </div>
         </div>
       </div>
@@ -197,43 +190,12 @@ onKeyStroke('ArrowRight', () => {
   display: none;
 }
 
-/* volume Container */
 .volume-container {
-  width: 24px;
-  height: 24px;
-  border: 1.5px solid #333;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ccc 30%, #999 70%);
-  position: relative;
-  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-/* Volume knob */
-.volume-knob {
-  width: 21px;
-  height: 21px;
-  background-color: #444;
-  border-radius: 50%;
-  margin-top: 0.5px;
-  transform: translate(-50%, -50%) rotate(0deg);
-  transition: transform 0.2s ease-out, box-shadow 0.3s ease-in-out;
-  box-shadow: inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.4), inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.1);
-}
-
-.volume-knob:before {
-  content: '';
-  width: 1.5px;
-  height: 4.5px;
-  background-color: #fff;
-  position: absolute;
-  top: 1.5px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 1px;
-  box-shadow: 0 0.75px 1.5px rgba(0, 0, 0, 0.2);
+  width: 15rem;
+  display: none;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* Media Queries */
@@ -250,7 +212,8 @@ onKeyStroke('ArrowRight', () => {
   }
 
   .mobile-background-blur,
-  .mobile-background-image {
+  .mobile-background-image,
+  .track-infos-mobile-container {
     display: none;
   }
 
@@ -258,12 +221,12 @@ onKeyStroke('ArrowRight', () => {
     display: flex;
   }
 
-  .track-infos-mobile-container {
-    display: none;
-  }
-
   .controls .download-button-container {
     display: block;
+  }
+
+  .volume-container {
+    display: flex;
   }
 }
 </style>
