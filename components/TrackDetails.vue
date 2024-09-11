@@ -32,8 +32,8 @@ defineProps({
     <img v-if="!desktop" :src="albumImage" width="80" height="80" class="thumbnail">
     <div class="track-info-content" :class="{ 'align-items-center': desktop }">
       <UTooltip text="See on Jamendo platform">
-        <a :href="shareurl" target="_blank" rel="noopener noreferrer" class="track-link"
-          :class="!desktop ? 'font-size-lg' : 'font-size-xl'">
+        <a :href="shareurl" target="_blank" rel="noopener noreferrer" class="track-title"
+          :class="!desktop ? 'track-title-mobile' : 'track-title-desktop'">
           {{ name }}
           <UIcon name="i-fa6-solid-up-right-from-square" class="icon-spacing"
             :class="!desktop ? 'icon-small' : 'icon-large'" />
@@ -67,7 +67,7 @@ defineProps({
   align-items: center;
 }
 
-.track-link {
+.track-title {
   font-weight: 600;
   color: #f3f4f6;
   white-space: nowrap;
@@ -76,15 +76,15 @@ defineProps({
   transition: color 0.2s ease;
 }
 
-.track-link:hover {
+.track-title:hover {
   color: #3b82f6;
 }
 
-.font-size-large {
+.track-title-mobile {
   font-size: 1.125rem;
 }
 
-.font-size-extra-large {
+.track-title-desktop {
   font-size: 1.875rem;
 }
 
@@ -114,12 +114,12 @@ defineProps({
   font-size: 0.875rem;
 }
 
-.thumbnail {
-  display: block;
-}
-
 .font-italic {
   font-style: italic;
+}
+
+.thumbnail {
+  display: block;
 }
 
 @media screen and (max-width: 640px) {
