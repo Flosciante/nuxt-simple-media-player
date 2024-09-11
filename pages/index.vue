@@ -27,12 +27,12 @@ async function select (row: Track) {
 
 <template>
   <div :class="$style.container">
-    <Header>
+    <PlaylistHeader>
       <template #search>
         <UInput v-model="query" class="w-full hidden md:block md:pl-40 md:pr-20 lg:px-60"
           placeholder="Search title, artist or album" />
       </template>
-    </Header>
+    </PlaylistHeader>
 
     <table :class="$style['table']">
       <thead :class="$style['table-header']">
@@ -78,7 +78,7 @@ async function select (row: Track) {
 .container {
   height: 100vh;
   width: 100vw;
-  background-color: #1a1a1a;
+  background-color: rgb(15 23 42);
 }
 
 .table {

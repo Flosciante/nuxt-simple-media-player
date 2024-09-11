@@ -21,6 +21,7 @@ const state = ref(props.state)
 
 const { playlistStore, next } = useAudioControls(player, state)
 
+//if end of the track, move on to the next one
 watch(() => playlistStore.currentTime, (newTime) => {
   if (newTime === props.audioPlayer.duration) {
     next(true)
