@@ -22,14 +22,13 @@ const knobRotation = computed(() => {
 </script>
 
 <template>
-  <div ref="volumeContainer" class="volume">
-    <div class="volume-knob" :style="{ transform: knobRotation }" />
+  <div ref="volumeContainer" :class="$style.volume">
+    <div :class="$style['volume-knob']" :style="{ transform: knobRotation }" />
   </div>
-  <URange v-model="volume" class="w-32 lg:w-40" size="xs"
-    :ui="{ thumb: { background: ' [&::-webkit-slider-thumb]:dark:bg-primary-400' } }" />
+  <URange v-model="volume" :class="$style['volume-range']" size="xs" />
 </template>
 
-<style scoped lang="postcss">
+<style module lang="postcss">
 .volume {
   width: 24px;
   height: 24px;

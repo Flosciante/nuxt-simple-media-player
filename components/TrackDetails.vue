@@ -28,24 +28,24 @@ defineProps({
 </script>
 
 <template>
-  <div class="track-info-container" :class="{ 'max-width-desktop': !desktop }">
-    <img v-if="!desktop" :src="albumImage" width="80" height="80" class="thumbnail">
-    <div class="track-info-content" :class="{ 'align-items-center': desktop }">
+  <div :class="[$style['track-info-container'], { [$style['max-width-desktop']]: !desktop }]">
+    <img v-if="!desktop" :src="albumImage" width="80" height="80" :class="$style.thumbnail">
+    <div :class="[$style['track-info-content'], { [$style['align-items-center']]: desktop }]">
       <UTooltip text="See on Jamendo platform">
-        <a :href="shareurl" target="_blank" rel="noopener noreferrer" class="track-title"
-          :class="!desktop ? 'track-title-mobile' : 'track-title-desktop'">
+        <a :href="shareurl" target="_blank" rel="noopener noreferrer"
+          :class="[$style['track-title'], !desktop ? $style['track-title-mobile'] : $style['track-title-desktop']]">
           {{ name }}
-          <UIcon name="i-fa6-solid-up-right-from-square" class="icon-spacing"
-            :class="!desktop ? 'icon-small' : 'icon-large'" />
+          <UIcon name="i-fa6-solid-up-right-from-square"
+            :class="[$style['icon-spacing'], !desktop ? $style['icon-small'] : $style['icon-large']]" />
         </a>
       </UTooltip>
-      <span class="album-name">{{ albumName }}</span>
-      <span class="artist-name">By: <span class="font-italic">{{ artistName }}</span></span>
+      <span :class="$style['album-name']">{{ albumName }}</span>
+      <span :class="$style['artist-name']">By: <span :class="$style['font-italic']">{{ artistName }}</span></span>
     </div>
   </div>
 </template>
 
-<style scoped lang="postcss">
+<style module lang="postcss">
 .track-info-container {
   display: flex;
   gap: 0.5rem;

@@ -14,15 +14,15 @@ const playlistStore = usePlaylistStore()
 </script>
 
 <template>
-  <div class="audio-progress-bar-container">
+  <div :class="$style['player-progress-bar-container']">
     <span>{{ formatDuration(playlistStore.currentTime) }}</span>
     <URange v-model="playlistStore.currentTime" :min="0" :max="audioPlayer.duration" />
     <span>{{ totalDuration }}</span>
   </div>
 </template>
 
-<style lang="postcss">
-.audio-progress-bar-container {
+<style module lang="postcss">
+.player-progress-bar-container {
   width: 100%;
   padding-left: 1rem;
   padding-right: 1rem;

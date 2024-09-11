@@ -14,7 +14,6 @@ onMounted(async () => {
   initAudioPlayer()
 })
 
-
 //watchers
 watch(
   () => playlistStore.currentTime,
@@ -41,30 +40,30 @@ onKeyStroke('ArrowRight', () => {
 
 <template>
   <div>
-    <div v-if="track && audioPlayer" class="track-container">
-      <span class="mobile-background-blur" />
-      <img :src="track.image" width="1200" height="800" class="mobile-background-image">
+    <div v-if="track && audioPlayer" :class="$style['track-container']">
+      <span :class="$style['mobile-background-blur']" />
+      <img :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']">
 
-      <UTooltip text="Back to playlist" :shortcuts="['Esc']" class="back-button-container">
+      <UTooltip text="Back to playlist" :shortcuts="['Esc']" :class="$style['back-button-container']">
         <UButton icon="i-fa6-solid-arrow-left" variant="link" size="xl" to="/" />
       </UTooltip>
 
-      <div class="track-infos-container">
+      <div :class="$style['track-infos-container']">
         <img :src="track.image" width="600" height="600">
-        <TrackInfos :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
+        <TrackDetails :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
           :album-name="track.album_name" :album-image="track.album_image" desktop />
       </div>
 
-      <div class="controls-container">
-        <div class="track-infos-mobile-range-bar-container">
+      <div :class="$style['controls-container']">
+        <div :class="$style['track-infos-mobile-range-bar-container']">
           <!-- infos -->
-          <div class="track-infos-mobile-container">
-            <TrackInfos :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
+          <div :class="$style['track-infos-mobile-container']">
+            <TrackDetails :name="track.name" :shareurl="track.shareurl" :artist-name="track.artist_name"
               :album-name="track.album_name" :album-image="track.album_image" />
 
             <UTooltip text="Download track">
               <UButton v-if="track.audiodownload_allowed" variant="link" icon="i-fa6-solid-download" color="gray"
-                :to="track.audiodownload" class="color-transition" />
+                :to="track.audiodownload" :class="$style['color-transition']" />
             </UTooltip>
           </div>
 
@@ -73,28 +72,28 @@ onKeyStroke('ArrowRight', () => {
         </div>
 
         <!-- audio controls -->
-        <div class="controls">
-          <UTooltip text="Download track" class="download-button-container">
+        <div :class="$style.controls">
+          <UTooltip text="Download track" :class="$style['download-button-container']">
             <UButton v-if="track.audiodownload_allowed" variant="link" icon="i-fa6-solid-download" color="gray"
-              :to="track.audiodownload" class="color-transition" />
+              :to="track.audiodownload" :class="$style['color-transition']" />
           </UTooltip>
 
           <!-- track buttons -->
           <AudioControls :audio-player="audioPlayer" :state="audioState" />
 
           <!-- volume -->
-          <div class="w-60 gap-x-2 items-center justify-end hidden md:flex">
+          <div :class="$style['volume-container']">
             <AudioVolume :audio-player="audioPlayer" :state="audioState" />
           </div>
         </div>
       </div>
     </div>
-    <audio ref="audioPlayer" controls class="hidden" />
+    <audio ref="audioPlayer" controls :class="$style['audio-player']" />
   </div>
 </template>
 
 
-<style scoped lang="postcss">
+<style module lang="postcss">
 /* transition color */
 .color-transition {
   transition: color 0.2s ease, background-color 0.2s ease;
@@ -196,6 +195,10 @@ onKeyStroke('ArrowRight', () => {
   gap: 0.5rem;
   align-items: center;
   justify-content: flex-end;
+}
+
+.audio-player {
+  display: none;
 }
 
 /* Media Queries */
