@@ -69,7 +69,8 @@ onKeyStroke('ArrowRight', () => {
           </div>
 
           <!-- time range -->
-          <AudioProgressBar v-if="duration" :total-duration="duration" :audio-player="audioPlayer" />
+          <AudioProgressBar v-if="duration" :total-duration="duration" :audio-player="audioPlayer"
+            :state="audioState" />
         </div>
 
         <!-- audio controls -->

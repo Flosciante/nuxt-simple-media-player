@@ -4,10 +4,11 @@ import type { AudioState } from '~/types'
 
 export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audioState: Ref<AudioState>) => {
   const playlistStore = usePlaylistStore()
-  const track = computed(() => playlistStore.getCurrentTrack)
   const duration = ref<string>()
 
   //computed
+  const track = computed(() => playlistStore.getCurrentTrack)
+
   const volume = computed({
     get: () => playlistStore.currentVolume,
     set: (newValue: number) => {
@@ -18,7 +19,7 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     }
   })
 
-
+  //functions
   const initAudioPlayer = () => {
     playlistStore.loadFromLocalStorage()
 
@@ -70,7 +71,7 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     }
   }
 
-  const next = () => {
+  const next = (playNext: boolean = false) => {
     const currentIndex = playlistStore.getPlaylist.findIndex((t) => t.id === track.value!.id)
     let nextIndex = currentIndex + 1
 
@@ -85,7 +86,7 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     if (audioPlayer.value) {
       audioPlayer.value.src = nextTrack.audio
       audioPlayer.value.currentTime = 0
-      if (audioState.value === 'play') {
+      if (audioState.value === 'play' || playNext) {
         audioPlayer.value.play()
       }
     }
@@ -110,16 +111,20 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
   }
 
   return {
-    track,
+    //variables
     duration,
+    audioState,
+    //functions
+    initAudioPlayer,
     play,
     pause,
     stop,
     next,
     previous,
+    //store
     playlistStore,
-    initAudioPlayer,
-    volume,
-    audioState
+    //computed
+    track,
+    volume
   }
 }

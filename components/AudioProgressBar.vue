@@ -1,7 +1,13 @@
 <script lang="ts" setup>
-defineProps({
+import type { AudioState } from '~/types'
+
+const props = defineProps({
   audioPlayer: {
     type: Object as PropType<HTMLAudioElement>,
+    required: true
+  },
+  state: {
+    type: String as PropType<AudioState>,
     required: true
   },
   totalDuration: {
@@ -10,7 +16,16 @@ defineProps({
   }
 })
 
-const playlistStore = usePlaylistStore()
+const player = ref(props.audioPlayer)
+const state = ref(props.state)
+
+const { playlistStore, next } = useAudioControls(player, state)
+
+watch(() => playlistStore.currentTime, (newTime) => {
+  if (newTime === props.audioPlayer.duration) {
+    next(true)
+  }
+})
 </script>
 
 <template>
