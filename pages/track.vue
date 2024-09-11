@@ -166,6 +166,7 @@ onKeyStroke('ArrowRight', () => {
   height: 100%;
   gap: 1rem;
   margin-top: 7rem;
+  max-height: 600px;
 }
 
 /* track infos + controls container */
