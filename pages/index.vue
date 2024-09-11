@@ -52,7 +52,7 @@ async function select (row: Track) {
           <!-- Track Title -->
           <td :class="$style['body-track-title-wrapper']">
             <div :class="$style['body-track-title-container']">
-              <img :src="track.image" :alt="`Album ${track.album_name} cover`">
+              <img :src="track.image" :alt="`Album ${track.album_name} cover`" width="48" height="48">
               <div>
                 <div :class="$style['body-track-title-name']">{{ track.name }}</div>
                 <div :class="$style['body-track-title-artist']">{{ track.artist_name }}</div>

@@ -5,7 +5,7 @@
         <Logo />
       </div>
       <slot name="search" />
-      <UAvatar src="https://avatars.githubusercontent.com/u/6696789?v=4" :class="$style.avatar" />
+      <UAvatar src="https://avatars.githubusercontent.com/u/6696789?v=4" :class="$style.avatar" alt="profil picture" />
     </div>
     <div :class="$style['header-title']">
       <h1>Your Tracks</h1>
