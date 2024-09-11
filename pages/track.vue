@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { AudioState } from '~/types'
+
 //reactive variables
 const audioPlayer = ref<HTMLAudioElement | null>(null)
-
-const audioState = ref<'pause' | 'play' | 'stop'>('pause')
+const audioState = ref<AudioState>('pause')
 
 //composables
 const { track, duration, next, previous, playlistStore, initAudioPlayer } = useAudioControls(audioPlayer, audioState)

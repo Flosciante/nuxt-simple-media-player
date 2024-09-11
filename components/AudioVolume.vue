@@ -1,11 +1,13 @@
 <script lang="ts" setup>
+import type { AudioState } from '~/types'
+
 const props = defineProps({
   audioPlayer: {
     type: Object as PropType<HTMLAudioElement>,
     required: true
   },
   state: {
-    type: Object as PropType<'pause' | 'play' | 'stop'>,
+    type: String as PropType<AudioState>,
     required: true
   }
 })

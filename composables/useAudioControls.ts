@@ -1,7 +1,8 @@
 import { ref, computed } from 'vue'
 import { usePlaylistStore } from '@/stores/usePlaylistStore'
+import type { AudioState } from '~/types'
 
-export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audioState: Ref<'pause' | 'play' | 'stop'>) => {
+export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audioState: Ref<AudioState>) => {
   const playlistStore = usePlaylistStore()
   const track = computed(() => playlistStore.getCurrentTrack)
   const duration = ref<string>()
