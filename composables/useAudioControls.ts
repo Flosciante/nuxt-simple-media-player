@@ -1,3 +1,24 @@
+/**
+ * This composable provides all the logic and controls for managing audio playback in the application.
+ * - `audioPlayer` (Ref): The HTML audio element that handles audio playback.
+ * - `audioState` (Ref): The current state of the audio ('play', 'pause', 'stop').
+ *
+ * Computed properties:
+ * - `track`: The currently selected track or the first track in the playlist.
+ * - `volume`: Controls the current audio volume, syncing with the playlist store and the audio element.
+ *
+ * Functions:
+ * - `initAudioPlayer`: Initializes the audio player with track, volume, and current time from the playlist store, and adds event listeners.
+ * - `play`: Starts playback of the current track, updating the playlist store and local storage.
+ * - `pause`: Pauses the current track and updates the playlist store.
+ * - `stop`: Stops playback, resets the current time, and updates the playlist store.
+ * - `next`: Moves to the next track in the playlist, with an option to auto-play.
+ * - `previous`: Moves to the previous track in the playlist.
+ *
+ * The composable also interacts with the playlist store to manage playback state and persists it across sessions.
+ */
+
+
 import { ref, computed } from 'vue'
 import { usePlaylistStore } from '@/stores/usePlaylistStore'
 import type { AudioState } from '~/types'

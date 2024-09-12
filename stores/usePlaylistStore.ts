@@ -1,3 +1,19 @@
+/**
+ * This store manages the state and actions related to the audio playlist and the current track.
+ * - It includes the playlist, current track, current playback time, volume, and audio state (play, pause, stop).
+ * - Actions:
+ *   - `fetchPlaylist`: Fetches the playlist data from the API.
+ *   - `loadFromLocalStorage`: Loads the current track, time, and volume from local storage on page load.
+ *   - `playTrack`: Starts playing a selected track and saves its state in local storage.
+ *   - `pauseTrack`: Pauses the current track and updates the local storage.
+ *   - `stopTrack`: Stops the current track and resets the playback time.
+ *   - `updateCurrentVolume`: Updates the playback volume and saves it in local storage.
+ *   - `updateCurrentTime`: Updates the current playback time and stores it in local storage.
+ * - Getters:
+ *   - `getPlaylist`: Returns the current playlist.
+ *   - `getCurrentTrack`: Returns the currently selected track.
+ */
+
 import { defineStore } from 'pinia'
 import type { Track, AudioState } from '~/types'
 
