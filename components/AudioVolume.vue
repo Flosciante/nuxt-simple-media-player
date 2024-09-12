@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+/**
+ * This component manages volume control through a slider.
+ */
+
 import type { AudioState } from '~/types'
 
 const props = defineProps({
@@ -32,6 +36,7 @@ const knobRotation = computed(() => {
 
 <style module lang="postcss">
 .volume {
+  display: none;
   width: 24px;
   height: 24px;
   border: 1.5px solid #333;
@@ -39,7 +44,6 @@ const knobRotation = computed(() => {
   background: radial-gradient(circle, #ccc 30%, #999 70%);
   position: relative;
   box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
-  display: flex;
   justify-content: center;
   transition: box-shadow 0.3s ease-in-out;
 }
@@ -69,7 +73,18 @@ const knobRotation = computed(() => {
 }
 
 .volume-range {
+  display: none;
   width: 8rem;
+}
+
+@media (min-width: 768px) {
+  .volume {
+    display: block;
+  }
+
+  .volume-range {
+    display: flex;
+  }
 }
 
 @media (min-width: 1024px) {
