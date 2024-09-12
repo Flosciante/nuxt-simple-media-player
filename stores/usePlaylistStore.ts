@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Track } from '~/types'
+import type { Track, AudioState } from '~/types'
 
 const { fetchPlaylist } = usePlaylist()
 
@@ -8,7 +8,8 @@ export const usePlaylistStore = defineStore('playlist', {
     playlist: <Track[]>([]),
     currentTrack: null as Track | null,
     currentTime: 0,
-    currentVolume: 40
+    currentVolume: 40,
+    audioState: 'pause' as AudioState,
   }),
   actions: {
     async fetchPlaylist () {
@@ -36,6 +37,7 @@ export const usePlaylistStore = defineStore('playlist', {
     },
     playTrack (track: Track) {
       this.currentTrack = track
+      this.audioState = 'play'
 
       localStorage.setItem('currentTrackId', track.id)
       localStorage.setItem('currentTrackTime', '0')
@@ -43,12 +45,14 @@ export const usePlaylistStore = defineStore('playlist', {
     },
 
     pauseTrack () {
+      this.audioState = 'pause'
       localStorage.setItem('audioState', 'pause')
     },
 
     stopTrack () {
       this.currentTime = 0
 
+      this.audioState = 'stop'
       localStorage.setItem('audioState', 'stop')
       localStorage.setItem('currentTrackTime', '0')
     },
