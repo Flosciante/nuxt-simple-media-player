@@ -1,4 +1,10 @@
 <script setup lang="ts">
+/**
+ * This component displays information about the currently track.
+ * - Displays the album cover, track name, album name, and artist name.
+ * - Dynamically adjusts the layout and text sizes based on detail mode.
+ */
+
 defineProps({
   albumImage: {
     type: String,
@@ -45,7 +51,7 @@ defineProps({
         </a>
       </UTooltip>
       <span :class="$style['album-name']">{{ albumName }}</span>
-      <span :class="$style['artist-name']">By: <span :class="$style['font-italic']">{{ artistName }}</span></span>
+      <span :class="$style['artist-name']">By: <span :class="$style['artist-name-italic']">{{ artistName }}</span></span>
     </div>
   </div>
 </template>
@@ -73,10 +79,6 @@ defineProps({
 .track-info-container-detail-mobile {
   width: 100%;
   display: none;
-}
-
-.max-width-desktop {
-  max-width: 300px;
 }
 
 .track-info-content {
@@ -138,7 +140,7 @@ defineProps({
   font-size: 0.75rem;
 }
 
-.font-italic {
+.artist-name-italic {
   font-style: italic;
 }
 
@@ -155,6 +157,10 @@ defineProps({
 @media (min-width: 768px) {
   .track-info-container-detail-mobile {
     display: flex;
+  }
+
+  .max-width-desktop {
+    max-width: 300px;
   }
 }
 </style>
