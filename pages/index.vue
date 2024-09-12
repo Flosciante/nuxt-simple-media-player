@@ -1,13 +1,33 @@
 <script lang="ts" setup>
 import { formatDuration } from '~/utils'
-import { usePlaylistStore } from '@/stores/usePlaylistStore'
-import type { Track } from '~/types'
+import type { Track, AudioState } from '~/types'
 
+const audioPlayer = ref<HTMLAudioElement | null>(null)
+const query = ref('')
+const audioState = ref<AudioState>('pause')
 
-const playlistStore = usePlaylistStore()
+const { playlistStore, play, pause, initAudioPlayer, previous, next, duration } = useAudioControls(audioPlayer, audioState)
 const playlist = playlistStore.getPlaylist
 
-const query = ref('')
+//hooks
+onMounted(async () => {
+  await nextTick()
+
+  if (audioPlayer.value) {
+    initAudioPlayer()
+  }
+})
+
+//watchers
+//keep position if click on progress bar
+watch(
+  () => playlistStore.currentTime,
+  (newTime) => {
+    if (audioPlayer.value && Math.abs(audioPlayer.value.currentTime - newTime) > 0.1) {
+      audioPlayer.value.currentTime = newTime
+    }
+  }
+)
 
 const filteredPlaylist = computed(() => {
   return playlist.filter((track) => {
@@ -19,8 +39,19 @@ const filteredPlaylist = computed(() => {
   })
 })
 
-async function select (row: Track) {
-  playlistStore.playTrack(row)
+const selectedRow = (id: string) => playlistStore.currentTrack?.id === id
+const canPlayTrack = (id: string) => !selectedRow(id) || ['pause', 'stop'].includes(playlistStore.audioState)
+
+// select row in table
+const select = async (row: Track) => {
+  if (canPlayTrack(row.id)) {
+    playlistStore.playTrack(row)
+    playlistStore.currentTime = 0
+    play()
+  } else {
+    playlistStore.pauseTrack()
+    pause()
+  }
 }
 </script>
 
@@ -46,19 +77,28 @@ async function select (row: Track) {
 
         <!-- Table Data -->
         <tbody v-if="filteredPlaylist && filteredPlaylist.length" :class="$style['table-body']">
-          <tr v-for="(track, index) in filteredPlaylist" :key="track.id" @click="select(track)">
-            <td :class="$style['body-track-index']">{{ index + 1 }}</td>
+          <tr v-for="(track, index) in filteredPlaylist" :key="track.id">
+            <td :class="$style['body-track-index']">
+              <span v-if="canPlayTrack(track.id)"
+            :class="[$style['track-index'], { [$style['body-track-in-progress']]: selectedRow(track.id) }]">{{ index + 1
+            }}</span>
+              <UIcon v-else name="i-fa6-solid-volume-high"
+                :class="[$style['icon-sound'], $style['body-track-in-progress']]" />
+              <UButton :icon="canPlayTrack(track.id) ? 'i-fa6-solid-play' : 'i-fa6-solid-pause'" variant="link"
+                size="xs" :class="$style['play-button']" @click="select(track)" />
+            </td>
 
             <!-- Track Title -->
             <td :class="$style['body-track-title-wrapper']">
               <div :class="$style['body-track-title-container']">
                 <img :src="track.image" :alt="`Album ${track.album_name} cover`" width="48" height="48">
                 <div :class="$style['body-track-title-name-artist']">
-                  <div :class="$style['body-track-title-name']">{{ track.name }}</div>
+                  <div
+                    :class="[$style['body-track-title-name'], { [$style['body-track-in-progress']]: selectedRow(track.id) }]">
+                    {{ track.name }}</div>
                   <div :class="$style['body-track-title-artist']">{{ track.artist_name }}</div>
                 </div>
               </div>
-
             </td>
 
             <!-- Album Name -->
@@ -73,9 +113,11 @@ async function select (row: Track) {
       </table>
     </div>
 
-    <div class="absolute bottom-0 w-full bg-black z-50">
-      <AudioPlayer />
+    <div v-if="audioPlayer && duration" class="absolute bottom-0 w-full bg-black z-50">
+      <AudioPlayer :audio-player="audioPlayer" :duration="duration" />
     </div>
+
+    <audio ref="audioPlayer" controls :class="$style['audio-player']" />
   </div>
 </template>
 
@@ -140,6 +182,19 @@ async function select (row: Track) {
 
   & tr:hover {
     background-color: #2d3748;
+
+    .track-index {
+      display: none;
+    }
+
+    .icon-sound {
+      display: none;
+    }
+
+    .play-button {
+      display: block !important;
+      margin-left: -0.5rem;
+    }
   }
 }
 
@@ -186,9 +241,19 @@ async function select (row: Track) {
   white-space: nowrap;
 }
 
+.body-track-in-progress {
+  color: rgb(59 130 246);
+}
+
 .body-track-title-artist {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: #c0c6d0;
+}
+
+.body-track-album,
+.body-track-duration {
+  font-size: 0.85rem;
+  color: rgb(203, 203, 203);
 }
 
 .body-track-album {
@@ -207,6 +272,14 @@ async function select (row: Track) {
   padding-right: 1rem;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+  display: none;
+}
+
+.play-button {
+  display: none;
+}
+
+.audio-player {
   display: none;
 }
 
