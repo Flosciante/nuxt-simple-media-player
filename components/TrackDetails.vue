@@ -40,7 +40,8 @@ defineProps({
 <template>
   <div
     :class="[$style['track-info-container'], { [$style['max-width-desktop']]: !desktop }, { [$style['track-info-container-detail-mobile']]: desktop }, { [$style['track-info-container-detail']]: detail }, { [$style['track-info-container-small']]: !detail }]">
-    <img v-if="!desktop" :src="albumImage" width="60" height="60" :class="$style.thumbnail">
+    <img v-if="!desktop" :src="albumImage" width="60" height="60" :class="$style.thumbnail"
+      :alt="`album ${albumName} cover`">
     <div :class="[$style['track-info-content'], { [$style['align-items-center']]: desktop }]">
       <UTooltip text="See on Jamendo platform">
         <a :href="shareurl" target="_blank" rel="noopener noreferrer"

@@ -31,7 +31,7 @@ const knobRotation = computed(() => {
   <div ref="volumeContainer" :class="$style.volume">
     <div :class="$style['volume-knob']" :style="{ transform: knobRotation }" />
   </div>
-  <URange v-model="volume" :class="$style['volume-range']" size="xs" />
+  <URange v-model="volume" :class="$style['volume-range']" size="xs" aria-label="Volume track" />
 </template>
 
 <style module lang="postcss">

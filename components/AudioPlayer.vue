@@ -39,7 +39,8 @@ onKeyStroke('Escape', () => {
     <!-- specific panel detail -->
     <div v-if="detail" class="w-full">
       <span :class="$style['mobile-background-blur']" />
-      <img v-if="track" :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']">
+      <img v-if="track" :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']"
+        alt="background album cover">
 
       <UTooltip text="Back to playlist" :shortcuts="['Esc']" :class="$style['back-button-container']">
         <UButton icon="i-fa6-solid-xmark" variant="link" color="white" size="xl" aria-label="Back to playlist"
@@ -54,7 +55,7 @@ onKeyStroke('Escape', () => {
     <div :class="$style['track-infos-container']">
       <!-- specific panel detail -->
       <img v-if="detail && track" :src="track.image" width="600" height="600"
-        :class="$style['track-infos-container-img']">
+        :class="$style['track-infos-container-img']" :alt="`album ${track.album_name} cover`">
       <!-- specific panel detail -->
       <TrackDetails v-if="track && detail" :name="track.name" :shareurl="track.shareurl"
         :artist-name="track.artist_name" :album-name="track.album_name" :album-image="track.album_image"
@@ -77,7 +78,7 @@ onKeyStroke('Escape', () => {
         <div :class="$style['volume-container']">
           <AudioVolume v-if="audioPlayer" :audio-player="audioPlayer" :state="audioState" />
           <UButton icon="i-fa6-solid-expand" variant="link" color="white" :class="{ 'hidden': detail }"
-            @click="detail = !detail" />
+            aria-label="open detail panel" @click="detail = !detail" />
         </div>
       </div>
     </div>
