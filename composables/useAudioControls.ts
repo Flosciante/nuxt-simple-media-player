@@ -2,12 +2,12 @@ import { ref, computed } from 'vue'
 import { usePlaylistStore } from '@/stores/usePlaylistStore'
 import type { AudioState } from '~/types'
 
-export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audioState: Ref<AudioState>) => {
+export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement>, audioState: Ref<AudioState>) => {
   const playlistStore = usePlaylistStore()
   const duration = ref<string>()
 
   //computed
-  const track = computed(() => playlistStore.getCurrentTrack)
+  const track = computed(() => playlistStore.getCurrentTrack || playlistStore.playlist[0])
 
   const volume = computed({
     get: () => playlistStore.currentVolume,
@@ -86,6 +86,7 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     if (audioPlayer.value) {
       audioPlayer.value.src = nextTrack.audio
       audioPlayer.value.currentTime = 0
+
       if (audioState.value === 'play' || playNext) {
         audioPlayer.value.play()
       }
@@ -106,7 +107,10 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     if (audioPlayer.value) {
       audioPlayer.value.src = previousTrack.audio
       audioPlayer.value.currentTime = 0
-      if (audioState.value === 'play') audioPlayer.value.play()
+
+      if (audioState.value === 'play') {
+        audioPlayer.value.play()
+      }
     }
   }
 
@@ -114,6 +118,7 @@ export const useAudioControls = (audioPlayer: Ref<HTMLAudioElement | null>, audi
     //variables
     duration,
     audioState,
+    audioPlayer,
     //functions
     initAudioPlayer,
     play,
