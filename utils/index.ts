@@ -6,13 +6,3 @@ export function formatDuration (seconds: number): string {
 
   return `${minutes}:${formattedSeconds}`
 }
-
-export function getFormattedDate (date: string) {
-  return date
-    ? new Date(date).toLocaleDateString('en-us', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-    : ''
-}
