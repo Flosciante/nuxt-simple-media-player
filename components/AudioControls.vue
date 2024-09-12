@@ -1,13 +1,16 @@
 <script lang="ts" setup>
+/**
+ * Manages audio playback controls for the player.
+ * - Provides buttons to play, pause, stop, move to the next or previous track.
+ * - The play/pause button dynamically updates based on the current audio state.
+ * - Supports keyboard shortcuts for quick navigation between tracks.
+ */
+
 import type { AudioState } from '~/types'
 
 const props = defineProps({
   audioPlayer: {
     type: Object as PropType<HTMLAudioElement>,
-    required: true
-  },
-  state: {
-    type: String as PropType<AudioState>,
     required: true
   },
   detail: {
@@ -17,9 +20,20 @@ const props = defineProps({
 })
 
 const player = ref(props.audioPlayer)
-const state = ref(props.state)
+const audioState = ref<AudioState>('pause')
 
-const { play, pause, stop, next, previous, audioState } = useAudioControls(player, state)
+const { play, pause, stop, next, previous, playlistStore } = useAudioControls(player, audioState)
+
+watch(() => playlistStore.audioState, (value) => audioState.value = value)
+
+//keyboards shortcut
+onKeyStroke('ArrowLeft', () => {
+  previous()
+})
+
+onKeyStroke('ArrowRight', () => {
+  next()
+})
 </script>
 
 <template>
