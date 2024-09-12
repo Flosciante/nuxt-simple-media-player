@@ -1,52 +1,42 @@
-<script lang="ts" setup>
+<script setup lang="ts">
+/**
+ * This component manages display the player panel (small or full).
+ * - It uses the `audioPlayer` and `duration` properties to handle the audio track and playback.
+ * - Displays the current track's image, artist, and album details when in detail view.
+ * - Allows users to control the audio playback (play, pause, next, previous, and stop).
+ * - Provides a keyboard shortcut ('Escape') to close the detailed view.
+ * - The layout dynamically adjusts based on the `detail` mode to show or hide the full panel.
+ */
+
 import type { AudioState } from '~/types'
 
-//reactive variables
-const audioPlayer = ref<HTMLAudioElement | null>(null)
+const props = defineProps({
+  audioPlayer: {
+    type: Object as PropType<Ref<HTMLAudioElement>>,
+    required: true
+  },
+  duration: {
+    type: String,
+    required: true
+  }
+})
+
+//data
 const audioState = ref<AudioState>('pause')
 const detail = ref(false)
 
 //composables
-const { track, duration, next, previous, playlistStore, initAudioPlayer } = useAudioControls(audioPlayer, audioState)
-
-//hooks
-onMounted(async () => {
-  await nextTick()
-
-  if (audioPlayer.value) {
-    initAudioPlayer()
-  }
-})
-
-//watchers
-//keep position if click on progress bar
-watch(
-  () => playlistStore.currentTime,
-  (newTime) => {
-    if (audioPlayer.value && Math.abs(audioPlayer.value.currentTime - newTime) > 0.1) {
-      audioPlayer.value.currentTime = newTime
-    }
-  }
-)
+const { track, audioPlayer } = useAudioControls(props.audioPlayer, audioState)
 
 //keyboard shortcuts
 onKeyStroke('Escape', () => {
-  navigateTo('/')
-})
-
-onKeyStroke('ArrowLeft', () => {
-  previous()
-})
-
-onKeyStroke('ArrowRight', () => {
-  next()
+  detail.value = false
 })
 </script>
 
 <template>
-
   <div :class="[$style['track-container'], { [$style['track-container-detail']]: detail }]">
-    <!-- detail -->
+    <!-- specific panel detail -->
     <div v-if="detail" class="w-full">
       <span :class="$style['mobile-background-blur']" />
       <img v-if="track" :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']">
@@ -61,11 +51,11 @@ onKeyStroke('ArrowRight', () => {
       </NuxtLink>
     </div>
 
-
     <div :class="$style['track-infos-container']">
+      <!-- specific panel detail -->
       <img v-if="detail && track" :src="track.image" width="600" height="600"
         :class="$style['track-infos-container-img']">
-
+      <!-- specific panel detail -->
       <TrackDetails v-if="track && detail" :name="track.name" :shareurl="track.shareurl"
         :artist-name="track.artist_name" :album-name="track.album_name" :album-image="track.album_image"
         :detail="detail" desktop />
@@ -76,9 +66,9 @@ onKeyStroke('ArrowRight', () => {
           :album-name="track.album_name" :album-image="track.album_image" :detail="detail" />
 
         <div :class="[$style['controls-audio-progress'], { [$style['controls-audio-progress-detail']]: detail }]">
-          <!-- track buttons -->
+          <!-- controls buttons (prev, stop, play, next) -->
           <AudioControls v-if="audioPlayer" :audio-player="audioPlayer" :state="audioState" :detail="detail" />
-
+          <!-- Seek bar for track duration and position -->
           <AudioProgressBar v-if="duration && audioPlayer" :total-duration="duration" :audio-player="audioPlayer!"
             :state="audioState" :detail="detail" />
         </div>
@@ -90,18 +80,12 @@ onKeyStroke('ArrowRight', () => {
             @click="detail = !detail" />
         </div>
       </div>
-      <audio ref="audioPlayer" controls :class="$style['audio-player']" />
     </div>
   </div>
 </template>
 
 
 <style module lang="postcss">
-/* transition color */
-.color-transition {
-  transition: color 0.2s ease, background-color 0.2s ease;
-}
-
 /* main container */
 .track-container {
   position: relative;
@@ -109,10 +93,12 @@ onKeyStroke('ArrowRight', () => {
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+  background: rgb(2, 10, 17)
 }
 
 .track-container-detail {
   height: 100vh;
+  background: transparent;
 }
 
 /* background for mobile */
@@ -141,6 +127,7 @@ onKeyStroke('ArrowRight', () => {
   right: 1rem;
   top: 1rem;
   transition: color 0.2s ease;
+  z-index: 9999;
 
   &:hover {
     color: rgb(176, 176, 176);
@@ -156,37 +143,12 @@ onKeyStroke('ArrowRight', () => {
 
 /* track infos */
 .track-infos-container {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
-}
-
-.track-infos-container-img {
-  display: none;
-}
-
-.track-infos-container-detail {
-  margin-top: 7rem;
-  gap: 1rem;
-}
-
-/* track infos + controls container */
-.controls-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  justify-content: flex-end;
-}
-
-.track-infos-mobile-range-bar-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  justify-content: flex-end;
 }
 
 .track-infos-mobile-container {
@@ -197,21 +159,19 @@ onKeyStroke('ArrowRight', () => {
   justify-content: space-between;
 }
 
-.download-button-container {
-  width: 15rem;
-  display: none;
+.track-infos-container-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
+/* volume */
 .volume-container {
-  width: 15rem;
-  display: none;
+  width: auto;
+  display: flex;
   gap: 0.5rem;
   align-items: center;
   justify-content: flex-end;
-}
-
-.audio-player {
-  display: none;
 }
 
 /* Media Queries */
@@ -223,10 +183,6 @@ onKeyStroke('ArrowRight', () => {
 }
 
 @media (min-width: 768px) {
-  .track-container {
-    background: linear-gradient(to bottom, #2d3748, #1a202c);
-  }
-
   .track-infos-mobile-container {
     display: none;
   }
@@ -238,18 +194,6 @@ onKeyStroke('ArrowRight', () => {
   .volume-container {
     display: flex;
   }
-
-  .controls-container {
-    height: auto;
-  }
-}
-
-.track-infos-mobile-range-bar-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  justify-content: flex-end;
 }
 
 .track-infos-mobile-container {
@@ -275,9 +219,7 @@ onKeyStroke('ArrowRight', () => {
 
 .controls-detail {
   width: 100%;
-  height: 100%;
   align-items: end;
-  padding-bottom: 2rem;
   flex-direction: column;
   place-content: end;
 }
@@ -287,12 +229,12 @@ onKeyStroke('ArrowRight', () => {
 }
 
 .controls-audio-progress {
-  width: 100%;
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
 
 .controls-audio-progress-detail {
+  width: 100%;
   display: flex;
   flex-direction: column-reverse;
 }
@@ -302,14 +244,6 @@ onKeyStroke('ArrowRight', () => {
   display: none;
 }
 
-.volume-container {
-  width: 15rem;
-  display: none;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: flex-end;
-}
-
 .audio-player {
   display: none;
 }
@@ -317,16 +251,13 @@ onKeyStroke('ArrowRight', () => {
 /* Media Queries */
 @media (min-width: 640px) {
   .track-infos-mobile-container {
+    width: 100%;
     display: flex;
     flex-direction: row;
   }
 }
 
 @media (min-width: 768px) {
-  .track-container {
-    background: linear-gradient(to bottom, #2d3748, #1a202c);
-  }
-
   .track-infos-mobile-container {
     display: none;
   }
@@ -337,24 +268,24 @@ onKeyStroke('ArrowRight', () => {
 
   .track-infos-container-img {
     display: block;
-  }
-
-  .controls .download-button-container {
-    display: block;
+    object-fit: cover;
+    max-width: 600px;
+    max-height: 600px;
   }
 
   .controls {
     justify-content: space-between;
   }
 
-  .volume-container {
-    display: flex;
-    max-width: 300px;
+  .controls-audio-progress {
     width: 100%;
   }
 
-  .controls-container {
-    height: auto;
+  .volume-container {
+    width: 15rem;
+    display: flex;
+    max-width: 300px;
+    width: 100%;
   }
 
   .controls-detail {
@@ -364,6 +295,7 @@ onKeyStroke('ArrowRight', () => {
     margin-bottom: -6rem;
     flex-direction: row;
     align-items: center;
+    padding-bottom: 2rem;
   }
 }
 </style>
