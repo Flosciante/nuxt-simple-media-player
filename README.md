@@ -16,8 +16,8 @@ This project is a simple yet functional music player Spotify-like. It was create
 ### Environment Variables
 You need to create a `.env` file at the root of the project with the following variables:
 ```bash
-NUXT_PUBLIC_JAMENDO_API_URL=""
-NUXT_PUBLIC_JAMENDO_API_CLIENT_KEY=
+NUXT_PUBLIC_JAMENDO_API_URL="https://api.jamendo.com/v3.0/tracks"
+NUXT_PUBLIC_JAMENDO_API_CLIENT_KEY="33aa6c40"
 ```
 ### Clone the repository:
 ```
