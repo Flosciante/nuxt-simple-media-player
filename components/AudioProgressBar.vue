@@ -1,4 +1,11 @@
 <script lang="ts" setup>
+/**
+ * This component displays and manages the track progress bar.
+ * - Displays the current time and total duration of the track.
+ * - Allows the user to control the track's progress.
+ * - Automatically triggers the next track.
+ */
+
 import type { AudioState } from '~/types'
 
 const props = defineProps({
@@ -36,9 +43,9 @@ watch(() => playlistStore.currentTime, (newTime) => {
 <template>
   <div
     :class="[$style['player-progress-bar'], detail ? $style['player-progress-bar-container-detail'] : $style['player-progress-bar-container']]">
-    <span>{{ formatDuration(playlistStore.currentTime) }}</span>
-    <URange v-model="playlistStore.currentTime" :min="0" :max="audioPlayer.duration" />
-    <span>{{ totalDuration }}</span>
+    <div :class="$style['current-time']">{{ formatDuration(playlistStore.currentTime) }}</div>
+    <URange v-model="playlistStore.currentTime" :min="0" :max="audioPlayer.duration" size="sm" />
+    <div :class="$style['current-time']">{{ totalDuration }}</div>
   </div>
 </template>
 
@@ -54,15 +61,14 @@ watch(() => playlistStore.currentTime, (newTime) => {
   position: absolute;
   left: 0;
   right: 0;
-  top: -16px;
-
-  & span {
-    display: none;
-    width: 3rem;
-  }
+  top: -14px;
 
   & :nth-child(3) {
     text-align: right;
+  }
+
+  & span {
+    display: block;
   }
 }
 
@@ -76,13 +82,19 @@ watch(() => playlistStore.currentTime, (newTime) => {
   }
 }
 
+.current-time,
+.total-duration {
+  display: none;
+  width: 2rem;
+  font-size: 0.75rem;
+}
+
 @media (min-width: 768px) {
   .player-progress-bar-container {
     position: relative;
     padding-left: 2rem;
     padding-right: 2rem;
-    padding-top: 1rem;
-
+    padding-top: 1.2rem;
 
     & span {
       display: block;
@@ -95,5 +107,11 @@ watch(() => playlistStore.currentTime, (newTime) => {
     right: 0;
     top: 4rem;
   }
+
+  .current-time,
+  .total-duration {
+    display: block;
+  }
+
 }
 </style>
