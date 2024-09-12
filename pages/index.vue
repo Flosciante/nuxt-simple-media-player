@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+/**
+ * This component renders the playlist of tracks and the audio player.
+ * - It uses the `useAudioControls` composable to manage playback (play, pause, etc.) and the `playlistStore` for state management.
+ * - Allows selecting tracks and controlling playback using buttons or by clicking on rows.
+ * - Keeps track of the current playback time and syncs it with the audio player.
+ * - The `audioPlayer` element is used for managing the HTML5 audio playback.
+ */
+
 import { formatDuration } from '~/utils'
 import type { Track, AudioState } from '~/types'
 
@@ -6,13 +14,15 @@ const audioPlayer = ref<HTMLAudioElement | null>(null)
 const query = ref('')
 const audioState = ref<AudioState>('pause')
 
-const { playlistStore, play, pause, initAudioPlayer, previous, next, duration } = useAudioControls(audioPlayer, audioState)
+const isTabletScreen = useMediaQuery('(max-width: 768px)')
+
+const { playlistStore, play, pause, initAudioPlayer, duration } = useAudioControls(audioPlayer, audioState)
 const playlist = playlistStore.getPlaylist
 
 //hooks
 onMounted(async () => {
   await nextTick()
-
+  //Initializes the audio player when the component is mounted.
   if (audioPlayer.value) {
     initAudioPlayer()
   }
@@ -77,7 +87,8 @@ const select = async (row: Track) => {
 
         <!-- Table Data -->
         <tbody v-if="filteredPlaylist && filteredPlaylist.length" :class="$style['table-body']">
-          <tr v-for="(track, index) in filteredPlaylist" :key="track.id">
+          <tr v-for="(track, index) in filteredPlaylist" :key="track.id"
+            @click="isTabletScreen ? select(track) : () => { }">
             <td :class="$style['body-track-index']">
               <span v-if="canPlayTrack(track.id)"
             :class="[$style['track-index'], { [$style['body-track-in-progress']]: selectedRow(track.id) }]">{{ index + 1
@@ -174,6 +185,10 @@ const select = async (row: Track) => {
   & tr {
     margin-top: 1rem;
     transition: background-color 0.2s ease;
+
+    .icon-sound {
+      display: block;
+    }
   }
 
   & tr:first-child {
@@ -188,11 +203,11 @@ const select = async (row: Track) => {
     }
 
     .icon-sound {
-      display: none;
+      display: block;
     }
 
     .play-button {
-      display: block !important;
+      display: none !important;
       margin-left: -0.5rem;
     }
   }
@@ -217,7 +232,6 @@ const select = async (row: Track) => {
     height: 3rem;
     margin-right: 1rem;
     border-radius: 0.125rem;
-    display: none;
   }
 }
 
@@ -289,6 +303,18 @@ const select = async (row: Track) => {
   .table-header-artist {
     display: table-cell;
   }
+
+  .table-body {
+    & tr:hover {
+      .play-button {
+        display: block !important;
+      }
+
+      .icon-sound {
+        display: none;
+      }
+    }
+  }
 }
 
 @media (min-width: 640px) {
@@ -296,8 +322,7 @@ const select = async (row: Track) => {
   .table-header-duration,
   .table-header-index,
   .body-track-index,
-  .body-track-duration,
-  .body-track-title-wrapper img {
+  .body-track-duration {
     display: table-cell;
   }
 }
