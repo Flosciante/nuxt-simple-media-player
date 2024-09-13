@@ -9,7 +9,5 @@ export default defineNuxtConfig({
     }
   },
 
-  devtools: { enabled: true },
-
   modules: ['@nuxt/eslint', '@nuxt/ui', '@pinia/nuxt', '@vueuse/nuxt']
 })
