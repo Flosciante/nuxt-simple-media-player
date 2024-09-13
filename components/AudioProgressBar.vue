@@ -45,7 +45,7 @@ watch(() => playlistStore.currentTime, (newTime) => {
     :class="[$style['player-progress-bar'], detail ? $style['player-progress-bar-container-detail'] : $style['player-progress-bar-container']]">
     <div :class="$style['current-time']">{{ formatDuration(playlistStore.currentTime) }}</div>
     <URange v-model="playlistStore.currentTime" :min="0" :max="audioPlayer.duration" size="sm"
-      aria-label="Seek bar track" />
+      aria-label="Seek bar track" :ui="{ thumb: { background: '', ring: '' } }" />
     <div :class="$style['current-time']">{{ totalDuration }}</div>
   </div>
 </template>
@@ -88,6 +88,7 @@ watch(() => playlistStore.currentTime, (newTime) => {
   display: none;
   width: 2rem;
   font-size: 0.75rem;
+  color: #fff;
 }
 
 @media (min-width: 768px) {

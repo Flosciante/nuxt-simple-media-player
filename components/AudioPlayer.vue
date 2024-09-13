@@ -43,8 +43,9 @@ onKeyStroke('Escape', () => {
         alt="background album cover">
 
       <UTooltip text="Back to playlist" :shortcuts="['Esc']" :class="$style['back-button-container']">
-        <UButton icon="i-fa6-solid-xmark" variant="link" color="white" size="xl" aria-label="Back to playlist"
-          @click="detail = false" />
+        <UButton variant="link" color="white" size="xl" aria-label="Back to playlist" @click="detail = false">
+          <UIcon name="i-fa6-solid-xmark" :class="$style['back-button-icon']" />
+        </UButton>
       </UTooltip>
 
       <NuxtLink to="/" :class="$style['logo-wraper']">
@@ -77,8 +78,10 @@ onKeyStroke('Escape', () => {
         <!-- volume -->
         <div :class="$style['volume-container']">
           <AudioVolume v-if="audioPlayer" :audio-player="audioPlayer" :state="audioState" />
-          <UButton icon="i-fa6-solid-expand" variant="link" color="white" :class="{ 'hidden': detail }"
-            aria-label="open detail panel" @click="detail = !detail" />
+          <UButton variant="link" color="white" aria-label="open detail panel"
+            :class="{ [$style['expand-button']]: detail }" @click="detail = !detail">
+            <UIcon name="i-fa6-solid-expand" :class="$style['icon-expand-button']" />
+          </UButton>
         </div>
       </div>
     </div>
@@ -135,6 +138,12 @@ onKeyStroke('Escape', () => {
   }
 }
 
+.back-button-icon {
+  color: #fff;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 /* logo */
 .logo-wraper {
   position: absolute;
@@ -173,6 +182,17 @@ onKeyStroke('Escape', () => {
   gap: 0.5rem;
   align-items: center;
   justify-content: flex-end;
+}
+
+/* expand button */
+.expand-button {
+  display: none;
+}
+
+.icon-expand-button {
+  color: #fff;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* Media Queries */

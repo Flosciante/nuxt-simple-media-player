@@ -94,6 +94,13 @@ onKeyStroke('ArrowRight', () => {
   }
 }
 
+.play,
+.stop,
+.prev,
+.next {
+  color: #fff;
+}
+
 .small-player {
   display: none;
 }

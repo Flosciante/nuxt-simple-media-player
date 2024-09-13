@@ -173,7 +173,6 @@ const select = async (row: Track) => {
 }
 
 .table-header-artist,
-.table-header-index,
 .table-header-duration {
   display: none;
 }
@@ -216,7 +215,6 @@ const select = async (row: Track) => {
 .body-track-index {
   padding-left: 1rem;
   padding-right: 1rem;
-  display: none;
 }
 
 .body-track-title-wrapper {
@@ -320,8 +318,6 @@ const select = async (row: Track) => {
 @media (min-width: 640px) {
 
   .table-header-duration,
-  .table-header-index,
-  .body-track-index,
   .body-track-duration {
     display: table-cell;
   }

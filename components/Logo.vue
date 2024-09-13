@@ -13,6 +13,7 @@
 
 <style scoped lang="postcss">
 .neon {
+  color: #fff;
   animation: neon 6s ease-in-out infinite;
   text-shadow: 0 0 1px rgba(0, 118, 70, 0),
     0 0 15px rgba(0, 220, 130, 0.15),
