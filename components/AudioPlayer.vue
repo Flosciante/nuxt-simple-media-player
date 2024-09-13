@@ -37,7 +37,7 @@ onKeyStroke('Escape', () => {
 <template>
   <div :class="[$style['track-container'], { [$style['track-container-detail']]: detail }]">
     <!-- specific panel detail -->
-    <div v-if="detail" class="w-full">
+    <div v-if="detail" :class="$style['header-detail']">
       <span :class="$style['mobile-background-blur']" />
       <img v-if="track" :src="track.image" width="1200" height="800" :class="$style['mobile-background-image']"
         alt="background album cover">
@@ -103,6 +103,14 @@ onKeyStroke('Escape', () => {
 .track-container-detail {
   height: 100vh;
   background: transparent;
+}
+
+.header-detail {
+  background: rgba(15, 23, 42, 0.9);
+  position: absolute;
+  height: 5rem;
+  top: 0;
+  width: 100%;
 }
 
 /* background for mobile */
