@@ -85,4 +85,4 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 This project uses the **Jamendo API**, which provides access to a vast library of royalty-free music. The API was integrated following the [API Terms of Use](https://devportal.jamendo.com/api_terms_of_use), ensuring compliance with licensing and usage guidelines.
 
 ## Preview
-👀 Demo is available at [https://app.netlify.com/sites/tutteo-frontend-technical-test/overview](https://tutteo-frontend-technical-test.netlify.app/)
+👀 Demo is available at https://tutteo-frontend-technical-test.netlify.app/
