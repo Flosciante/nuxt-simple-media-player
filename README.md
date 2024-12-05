@@ -10,7 +10,7 @@
 - [API Information](#api-information)
 
 ## Introduction
-This project is a simple yet functional music player Spotify-like. It was created as part of a technical test to demonstrate the ability to build a front-end application using modern web technologies. The player includes essential features such as play/pause/stop functionality, a timeline slider for seeking, and track information display including title, artist, and thumbnail.
+This project is a simple yet functional music player Spotify-like. It was created as part of the ability to build a front-end application using modern web technologies. The player includes essential features such as play/pause/stop functionality, a timeline slider for seeking, and track information display including title, artist, and thumbnail.
 
 ## Prerequisites
 ### Environment Variables
@@ -85,4 +85,4 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 This project uses the **Jamendo API**, which provides access to a vast library of royalty-free music. The API was integrated following the [API Terms of Use](https://devportal.jamendo.com/api_terms_of_use), ensuring compliance with licensing and usage guidelines.
 
 ## Preview
-👀 Demo is available at https://tutteo-frontend-technical-test.netlify.app/
+👀 Demo is available at https://nuxt-simple-media-player.netlify.app/
