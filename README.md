@@ -1,4 +1,4 @@
-# Tutteo frontend technical test
+# Nuxt simple media player
 
 ## Table of Contents
 - [Introduction](#introduction)
