@@ -19,11 +19,6 @@ You need to create a `.env` file at the root of the project with the following v
 NUXT_PUBLIC_JAMENDO_API_URL="https://api.jamendo.com/v3.0/tracks"
 NUXT_PUBLIC_JAMENDO_API_CLIENT_KEY="33aa6c40"
 ```
-### Clone the repository:
-```
-git clone https://github.com/username/tutteo-frontend-technical-test.git
-cd tutteo-frontend-technical-test
-```
 
 ## Installation
 
